@@ -4,6 +4,39 @@ version = "1.0.0"
 description = "Enterprise OneDrive for Business monitoring system with notifications and dashboard"
 readme = "README.md"
 requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Hans Buddenberg", email = "h.buddenberg@gmail.com"}
+]
+maintainers = [
+    {name = "Hans Buddenberg", email = "h.buddenberg@gmail.com"}
+]
+keywords = [
+    "onedrive",
+    "monitor",
+    "monitoring",
+    "business",
+    "sync",
+    "notifications",
+    "dashboard",
+    "windows",
+    "enterprise",
+    "productivity"
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Developers",
+    "Topic :: System :: Monitoring",
+    "Topic :: Office/Business",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Operating System :: Microsoft :: Windows",
+    "Environment :: Console",
+]
 dependencies = [
     "fastapi>=0.128.0",
     "httpx>=0.28.1",
@@ -12,9 +45,14 @@ dependencies = [
     "pywinauto>=0.6.9",
     "pyyaml>=6.0.3",
     "uvicorn>=0.40.0",
-    "pywin32>=308",
-    "uv>=0.1.36",
+    "pywin32>=308; sys_platform == 'win32'",
 ]
+
+[project.urls]
+Homepage = "https://github.com/hbuddenberg/OneDrive_Business_Monitor"
+Documentation = "https://github.com/hbuddenberg/OneDrive_Business_Monitor#readme"
+Repository = "https://github.com/hbuddenberg/OneDrive_Business_Monitor.git"
+Issues = "https://github.com/hbuddenberg/OneDrive_Business_Monitor/issues"
 
 [build-system]
 requires = ["hatchling"]
@@ -24,7 +62,7 @@ build-backend = "hatchling.build"
 packages = ["src"]
 
 [project.scripts]
-onedrive_business = "src.main:cli"
+onedrive-business = "src.main:cli"
 
 [tool.uv]
 package = true
