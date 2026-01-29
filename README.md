@@ -1,4 +1,230 @@
-# OneDrive Business Monitor
+# OneDrive Business Monitor / Monitor de OneDrive Business
+
+[English](#english) | [Español](#español)
+
+---
+
+<a name="english"></a>
+# English
+
+Headless monitoring system to detect and alert on OneDrive for Business synchronization issues on Windows.
+
+## Features
+
+- 📊 **Continuous monitoring** of OneDrive status
+- 🚧 **Automatic detection** of issues (authentication, sync, process)
+- 🔔 **Multi-channel notifications** (Email, Teams, Slack)
+- ⚡ **Auto-remediation** of common problems
+- 📈 **Real-time web dashboard** for monitoring
+- 🕵️ **Multiple detection methods** (Process, Registry, Canary file, Log analysis)
+
+## Installation
+
+### Prerequisites
+
+- Windows 10/11 with OneDrive for Business
+- Python 3.11+
+- Gmail App Password (for email notifications)
+
+### Quick Installation
+
+```bash
+# Clone repository
+git clone https://github.com/hbuddenberg/OneDrive_Business_Monitor.git
+cd OneDrive_Business_Monitor
+
+# Install dependencies (option 1: pip)
+pip install -r requirements.txt
+
+# Option 2: uv (recommended)
+pip install uv
+uv sync
+```
+
+## Configuration
+
+### 1. Create Configuration File
+
+```bash
+cp config.yaml.template config.yaml
+```
+
+### 2. Configure Gmail App Password
+
+1. Go to https://myaccount.google.com/apppasswords
+2. Generate a new App Password
+3. Copy the 16-character password
+
+### 3. Edit config.yaml
+
+```yaml
+target:
+  email: "your-email@company.com"
+  folder: "C:\\Users\\YOUR_USER\\OneDrive - YOUR_COMPANY"
+  title: "OneDrive - YOUR_COMPANY"
+
+notifications:
+  channels:
+    email:
+      sender_email: "your-email@gmail.com"
+      sender_password: "xxxx xxxx xxxx xxxx"  # 16-character App Password
+      to_email: "your-email@company.com"
+```
+
+**IMPORTANT**: Replace all `YOUR_...` values with your actual data.
+
+## Usage
+
+### Windows
+
+```bash
+# Run monitor (recommended)
+run_monitor.bat
+
+# Or using CLI with flags
+onedrive-business --help
+```
+
+#### Command-Line Flags
+
+```bash
+# Show help
+onedrive-business --help
+
+# Run monitor only (headless)
+onedrive-business monitor
+
+# Run dashboard only
+onedrive-business dashboard --port 2048 --host 0.0.0.0
+
+# Dashboard with auto-reload (development)
+onedrive-business dashboard --reload
+
+# Clean monitoring data
+onedrive-business clean
+```
+
+### Windows Service (Optional)
+
+To run automatically at startup:
+
+1. Open `taskschd.msc` (Task Scheduler)
+2. Create Basic Task
+3. Trigger: At log on
+4. Action: Start a program
+   - Program: `python`
+   - Arguments: `src/main.py`
+   - Start in: `path\to\project`
+
+## Monitored States
+
+| State | Description |
+|-------|-------------|
+| `OK` | OneDrive syncing correctly |
+| `SYNCING` | Files syncing (normal) |
+| `NOT_RUNNING` | OneDrive process not detected |
+| `AUTH_REQUIRED` | Authentication required |
+| `SYNC_TIMEOUT` | Prolonged sync (>10 min) |
+
+## Notification Channels
+
+### Email (Gmail)
+- ✅ Enabled by default
+- Requires App Password
+
+### Microsoft Teams
+```yaml
+channels:
+  teams:
+    enabled: true
+    webhook_url: "https://outlook.office.com/webhook/YOUR_WEBHOOK"
+```
+
+### Slack
+```yaml
+channels:
+  slack:
+    enabled: true
+    webhook_url: "https://hooks.slack.com/services/YOUR_WEBHOOK"
+```
+
+## Web Dashboard
+
+Access real-time dashboard at:
+
+```
+http://localhost:2048
+```
+
+Shows:
+- Current OneDrive status
+- Incident history
+- Last verification
+- Event counters
+
+## Security
+
+⚠️ **CRITICAL**: NEVER commit `config.yaml` - it contains sensitive credentials.
+
+The `config.yaml` file is in `.gitignore` to prevent accidental commits.
+
+## Troubleshooting
+
+### Not receiving email notifications
+- Verify App Password is correct
+- Confirm 2FA is enabled on Gmail account
+- Check SPAM folder
+
+### AUTH_REQUIRED false positives
+- Set `tray_auth_check: false` in `validations`
+- Verify `title` in `target` matches tray icon exactly
+
+### Dashboard not accessible
+- Verify port 2048 is not in use
+- Check Windows firewall
+
+## Project Structure
+
+```
+OneDrive_Business_Monitor/
+├── src/
+│   ├── main.py              # Main entry point
+│   ├── monitor/             # Monitoring logic
+│   │   ├── checker.py       # Detects OneDrive status
+│   │   ├── remediator.py    # Auto-remediation
+│   │   ├── alerter.py       # Alert logic
+│   │   └── main.py          # Monitor orchestrator
+│   ├── shared/
+│   │   ├── config.py        # Configuration loading
+│   │   ├── notifier.py      # Notification sending
+│   │   ├── templates.py     # Email/HTML templates
+│   │   ├── database.py      # Incident history
+│   │   └── schemas.py       # Data models
+│   └── dashboard/
+│       └── main.py          # Web dashboard (FastAPI)
+├── config.yaml.template     # Configuration template
+├── requirements.txt         # Dependencies
+├── pyproject.toml          # Project configuration
+├── run_monitor.bat         # Windows script
+└── README.md               # This file
+```
+
+## Contributing
+
+This project is maintained for personal use. Suggestions and improvements are welcome via Pull Requests.
+
+## License
+
+MIT License - See LICENSE file for details.
+
+## Disclaimer
+
+This tool is not affiliated with Microsoft or OneDrive. It is an independent monitoring project.
+
+---
+
+<a name="español"></a>
+# Español
 
 Monitor headless para detectar y alertar sobre problemas de sincronización de OneDrive for Business en Windows.
 
@@ -16,7 +242,7 @@ Monitor headless para detectar y alertar sobre problemas de sincronización de O
 ### Requisitos Previos
 
 - Windows 10/11 con OneDrive for Business
-- Python 3.10+
+- Python 3.11+
 - Gmail App Password (para notificaciones por email)
 
 ### Instalación Rápida
@@ -161,7 +387,7 @@ Muestra:
 
 El archivo `config.yaml` está en `.gitignore` para prevenir commits accidentales.
 
-## Troubleshooting
+## Solución de Problemas
 
 ### No recibo notificaciones de email
 - Verificar que el App Password sea correcto
@@ -206,7 +432,7 @@ OneDrive_Business_Monitor/
 
 Este proyecto es mantenido para uso personal. Las sugerencias y mejoras son bienvenidas mediante Pull Requests.
 
-## License
+## Licencia
 
 MIT License - Ver archivo LICENSE para detalles.
 
