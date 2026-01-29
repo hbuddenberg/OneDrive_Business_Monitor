@@ -71,15 +71,30 @@ notifications:
 ### Windows
 
 ```bash
-# Ejecutar monitor
+# Ejecutar monitor (recomendado)
 run_monitor.bat
+
+# O usando el CLI con flags
+onedrive-business --help
 ```
 
-### Linux/Mac (soporte experimental)
+#### Flags de Línea de Comandos
 
 ```bash
-chmod +x run_monitor.sh
-./run_monitor.sh
+# Mostrar ayuda
+onedrive-business --help
+
+# Ejecutar solo el monitor (sin dashboard)
+onedrive-business monitor
+
+# Ejecutar solo el dashboard web
+onedrive-business dashboard --port 2048 --host 0.0.0.0
+
+# Dashboard con auto-reload (desarrollo)
+onedrive-business dashboard --reload
+
+# Limpiar datos de monitoreo
+onedrive-business clean
 ```
 
 ### Como Servicio de Windows (Opcional)
@@ -184,7 +199,6 @@ OneDrive_Business_Monitor/
 ├── requirements.txt         # Dependencias
 ├── pyproject.toml          # Configuración de proyecto
 ├── run_monitor.bat         # Script Windows
-├── run_monitor.sh          # Script Linux/Mac
 └── README.md               # Este archivo
 ```
 
