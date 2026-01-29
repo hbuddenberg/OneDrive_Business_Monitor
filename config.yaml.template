@@ -1,0 +1,62 @@
+# OneDrive Business Monitor Configuration Template
+# Copia este archivo a config.yaml y completa con tus datos
+
+# Target account to monitor (MUST match tray icon title)
+target:
+  email: "tu-email@empresa.com"
+  folder: "C:\\Users\\TU_USUARIO\\OneDrive - TU_EMPRESA"
+  title: "OneDrive - TU_EMPRESA"
+
+# Monitor settings
+monitor:
+  check_interval_seconds: 15
+  status_file: "./status.json"
+  active_check_enabled: true
+  active_check_interval_seconds: 30
+  active_check_timeout_seconds: 20
+  log_path: "C:\\Users\\TU_USUARIO\\AppData\\Local\\Microsoft\\OneDrive\\logs\\Business1\\SyncDiagnostics.log"
+  canary_file: ".monitor_canary"
+  restart_on_startup: false
+  restart_wait_seconds: 10
+  syncing_restart_timeout_seconds: 60  # seconds in SYNCING -> force restart (0 = disabled)
+
+# Notifications (Multi-channel)
+notifications:
+  enabled: true
+  cooldown_minutes: 60  # 60 = production, 0 = testing
+  failed_remediation_delay_seconds: 120  # Time to wait after restart before notifying failure
+  channels:
+    email:
+      enabled: true
+      smtp_server: "smtp.gmail.com"
+      smtp_port: 587
+      sender_email: "tucorreo@gmail.com"
+      sender_password: "TU_APP_PASSWORD_DE_GMAIL"  # Generar en: https://myaccount.google.com/apppasswords
+      to_email: "tu-email@empresa.com"
+      cc_email: ""
+      bcc_email: ""
+    teams:
+      enabled: false
+      webhook_url: "https://outlook.office.com/webhook/TU_WEBHOOK"
+    slack:
+      enabled: false
+      webhook_url: "https://hooks.slack.com/services/TU_WEBHOOK"
+
+# Alerting (Legacy - see notifications)
+alerting:
+  enabled: true
+
+# Dashboard settings
+dashboard:
+  host: "0.0.0.0"
+  port: 2048
+
+# Validations (enable/disable)
+validations:
+  registry_check: false
+  process_check: true
+  log_check: true
+  canary_check: true
+  liveness_check: true
+  status_assignment: true
+  tray_auth_check: true  # Detect credential messages in system tray

@@ -1,0 +1,201 @@
+# OneDrive Business Monitor
+
+Monitor headless para detectar y alertar sobre problemas de sincronización de OneDrive for Business en Windows.
+
+## Características
+
+- 📊 **Monitoreo continuo** del estado de OneDrive
+- 🚧 **Detección automática** de problemas (autenticación, sincronización, proceso)
+- 🔔 **Notificaciones multi-canal** (Email, Teams, Slack)
+- ⚡ **Auto-remediación** de problemas comunes
+- 📈 **Dashboard web** para monitoreo en tiempo real
+- 🕵️ **Múltiples métodos de detección** (Process, Registry, Canary file, Log analysis)
+
+## Instalación
+
+### Requisitos Previos
+
+- Windows 10/11 con OneDrive for Business
+- Python 3.10+
+- Gmail App Password (para notificaciones por email)
+
+### Instalación Rápida
+
+```bash
+# Clonar repositorio
+git clone https://github.com/hbuddenberg/OneDrive_Business_Monitor.git
+cd OneDrive_Business_Monitor
+
+# Instalar dependencias (opción 1: pip)
+pip install -r requirements.txt
+
+# Opción 2: uv (recomendado)
+pip install uv
+uv sync
+```
+
+## Configuración
+
+### 1. Crear Archivo de Configuración
+
+```bash
+cp config.yaml.template config.yaml
+```
+
+### 2. Configurar Gmail App Password
+
+1. Ir a https://myaccount.google.com/apppasswords
+2. Generar un nuevo App Password
+3. Copiar el password de 16 caracteres
+
+### 3. Editar config.yaml
+
+```yaml
+target:
+  email: "tu-email@empresa.com"
+  folder: "C:\\Users\\TU_USUARIO\\OneDrive - TU_EMPRESA"
+  title: "OneDrive - TU_EMPRESA"
+
+notifications:
+  channels:
+    email:
+      sender_email: "tucorreo@gmail.com"
+      sender_password: "xxxx xxxx xxxx xxxx"  # App Password de 16 caracteres
+      to_email: "tu-email@empresa.com"
+```
+
+**IMPORTANTE**: Reemplaza todos los valores `TU_...` con tus datos reales.
+
+## Uso
+
+### Windows
+
+```bash
+# Ejecutar monitor
+run_monitor.bat
+```
+
+### Linux/Mac (soporte experimental)
+
+```bash
+chmod +x run_monitor.sh
+./run_monitor.sh
+```
+
+### Como Servicio de Windows (Opcional)
+
+Para ejecutar automáticamente al inicio:
+
+1. Abrir `taskschd.msc` (Programador de Tareas)
+2. Crear tarea básica
+3. Trigger: Al iniciar sesión
+4. Acción: Iniciar programa
+   - Programa: `python`
+   - Argumentos: `src/main.py`
+   - Iniciar en: `ruta\al\proyecto`
+
+## Métricas Monitoreadas
+
+| Estado | Descripción |
+|--------|-------------|
+| `OK` | OneDrive sincronizando correctamente |
+| `SYNCING` | Archivos sincronizando (normal) |
+| `NOT_RUNNING` | Proceso de OneDrive no detectado |
+| `AUTH_REQUIRED` | Requiere autenticación |
+| `SYNC_TIMEOUT` | Sincronización prolongada (>10 min) |
+
+## Canales de Notificación
+
+### Email (Gmail)
+- ✅ Habilitado por defecto
+- Requiere App Password
+
+### Microsoft Teams
+```yaml
+channels:
+  teams:
+    enabled: true
+    webhook_url: "https://outlook.office.com/webhook/TU_WEBHOOK"
+```
+
+### Slack
+```yaml
+channels:
+  slack:
+    enabled: true
+    webhook_url: "https://hooks.slack.com/services/TU_WEBHOOK"
+```
+
+## Dashboard Web
+
+Accede al dashboard en tiempo real:
+
+```
+http://localhost:2048
+```
+
+Muestra:
+- Estado actual de OneDrive
+- Historial de incidentes
+- Última verificación
+- Contadores de eventos
+
+## Seguridad
+
+⚠️ **CRÍTICO**: NUNCA hacer commit de `config.yaml` - contiene credenciales sensibles.
+
+El archivo `config.yaml` está en `.gitignore` para prevenir commits accidentales.
+
+## Troubleshooting
+
+### No recibo notificaciones de email
+- Verificar que el App Password sea correcto
+- Confirmar que 2FA está habilitado en la cuenta de Gmail
+- Revisar carpeta de SPAM
+
+### Falsos positivos de AUTH_REQUIRED
+- Ajustar `tray_auth_check: false` en `validations`
+- Verificar que el `title` en `target` coincida exactamente con el ícono de bandeja
+
+### Dashboard no accesible
+- Verificar que el puerto 2048 no esté en uso
+- Revisar firewall de Windows
+
+## Estructura del Proyecto
+
+```
+OneDrive_Business_Monitor/
+├── src/
+│   ├── main.py              # Entry point principal
+│   ├── monitor/             # Lógica de monitoreo
+│   │   ├── checker.py       # Detecta estado de OneDrive
+│   │   ├── remediator.py    # Auto-remediación
+│   │   ├── alerter.py       # Lógica de alertas
+│   │   └── main.py          # Orquestador de monitoreo
+│   ├── shared/
+│   │   ├── config.py        # Carga de configuración
+│   │   ├── notifier.py      # Envío de notificaciones
+│   │   ├── templates.py     # Templates de email/HTML
+│   │   ├── database.py      # Historial de incidentes
+│   │   └── schemas.py       # Modelos de datos
+│   └── dashboard/
+│       └── main.py          # Dashboard web (FastAPI)
+├── config.yaml.template     # Template de configuración
+├── requirements.txt         # Dependencias
+├── pyproject.toml          # Configuración de proyecto
+├── run_monitor.bat         # Script Windows
+├── run_monitor.sh          # Script Linux/Mac
+└── README.md               # Este archivo
+```
+
+## Contribuciones
+
+Este proyecto es mantenido para uso personal. Las sugerencias y mejoras son bienvenidas mediante Pull Requests.
+
+## License
+
+MIT License - Ver archivo LICENSE para detalles.
+
+## Disclaimer
+
+Esta herramienta no está afiliada con Microsoft ni OneDrive. Es un proyecto independiente de monitoreo.
